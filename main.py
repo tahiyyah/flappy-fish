@@ -61,23 +61,23 @@ class Player(pygame.sprite.Sprite):
             self.velocity += 1
             if self.velocity > 10:
                 self.velocity = 10
-            if self.rect.bottom < 530:  #makes fish unable to move if it falls to the sand
+            if self.rect.bottom < 530: #makes fish unable to move if it falls to the sand
                 self.rect.y += self.velocity
-            if self.rect.top < 0:  #makes fish not able to go off the screen
+            if self.rect.top < 0: #makes fish not able to go off the screen
                 self.rect.y -= self.velocity
         
         #animations
         if not self.end and self.start:
             current_time = pygame.time.get_ticks()
-            animation_speed = 150  #setting how fast the animation will be
-            self.index = (current_time // animation_speed) % len(alive_animation)  #calculating index of current frame
-            self.image = alive_animation[self.index]  #updating image
+            animation_speed = 150 #setting how fast the animation will be
+            self.index = (current_time // animation_speed) % len(alive_animation) #calculating index of current frame
+            self.image = alive_animation[self.index] #updating image
 
             #rotation
-            self.image = pygame.transform.rotate(alive_animation[self.index], -self.velocity)  #argument1 = animation image, argument2 = negative to ensure rotation is in correct direction
+            self.image = pygame.transform.rotate(alive_animation[self.index], -self.velocity) #argument1 = animation image, argument2 = negative to ensure rotation is in correct direction
 
         #collisions
-        if self.rect.bottom > 530:  #if collides with sand, game over
+        if self.rect.bottom > 530: #if collides with sand, game over
             self.end = True
             self.start = False
 
@@ -91,20 +91,20 @@ class Obstacle(pygame.sprite.Sprite):
         self.width = 85
         self.height = random.randint(100, 350)
         self.colour = darkgreen
-        self.bottom = self.height + self.width + 60  #y coordinate for bottom of pillar
+        self.bottom = self.height + self.width + 60 #y coordinate for bottom of pillar
         self.rect_top = Rect(self.x, 0, self.width, self.height)
         self.rect_bottom = Rect(self.x, self.bottom, self.width, (screen_height - self.bottom))
-        self.passed = False  #tracks if the pillar has been passed
+        self.passed = False #tracks if the pillar has been passed
 
     def update(self):
         top = pygame.draw.rect(screen, self.colour, Rect(self.x, 0, self.width, self.height))
         bottom = pygame.draw.rect(screen, self.colour, Rect(self.x, self.bottom, self.width, (screen_height - self.bottom)))
 
         if player.start:
-            self.x -= scroll_speed  #pillars scroll
+            self.x -= scroll_speed #pillars scroll
 
             if self.x < -85:
-                pillar_group.remove(self)  #once completely off screen, delete
+                pillar_group.remove(self) #once completely off screen, delete
 
             if top.colliderect(player) or bottom.colliderect(player):
                 player.end = True
@@ -177,30 +177,28 @@ def main():
     global bgscroll
     global tiles
 
-    font = pygame.font.Font(None, 36)  # Font for displaying score
-
     while True:
-        tiles += 1  #if you dont have + 1 then there's a blur in the scroll for a short time
+        tiles += 1 #if you dont have + 1 then there's a blur in the scroll for a short time
         clock.tick(30)
         
         # draw to screen
-        if not player.end:  #doesn't scroll if game ends
+        if not player.end: #doesn't scroll if game ends
             for i in range(0, tiles):
                 screen.blit(bg, (i * bg_width + bgscroll, 0))
 
-            if player.start:  #only scrolls when player starts game
+            if player.start: #only scrolls when player starts game
                 bgscroll -= scroll_speed
-                if abs(bgscroll) > bg_width:  #abs gets positive value
+                if abs(bgscroll) > bg_width: #abs gets positive value
                     bgscroll = 0
 
                 current_time = pygame.time.get_ticks()
                 if (current_time - last_pillar) > frequency:
-                    pillar = Obstacle()  #generates new pillar after frequency
+                    pillar = Obstacle() #generates new pillar after frequency
                     pillar_group.add(pillar)
                     last_pillar = current_time
 
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN and not player.end:  #jump
+            if event.type == pygame.KEYDOWN and not player.end: #jump
                 player.start = True
                 if event.key == pygame.K_SPACE:
                     player.velocity = -10
